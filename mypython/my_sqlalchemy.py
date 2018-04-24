@@ -19,22 +19,31 @@ class User(Base):
         return ''.join([login,userid,projid])
 
 
+def test_create_insert():
+    port = 30023
+    engine = create_engine('mysql+mysqldb://root:root@localhost:30023/mytest?unix_socket=/usr/local/mariadb/mysql.sock')
+    try:
+        kwargs = {'unix_socket':'/usr/local/mariadb/mysql.sock'}
+        engine.connect()
+    except exc.OperationalError:
+        engine = create_engine('mysql+mysqldb://root:lipeng#opzoon@localhost:30023/?unix_socket=/usr/local/mariadb/mysql.sock')
+        engine.execute('create database mytest',**kwargs).close()
+        engine = create_engine('mysql+mysqldb://root:lipeng#opzoon@localhost:30023/mytest?unix_socket=/usr/local/mariadb/mysql.sock')
 
-engine = create_engine('mysql+mysqldb://root:root@localhost:3306/mytest')
-try:
-    engine.connect()
-except exc.OperationalError:
-    engine = create_engine('mysql+mysqldb://root:root@localhost:3306')
-    engine.execute('create database mytest').close()
-    engine = create_engine('mysql+mysqldb://root:root@localhost:3306/mytest')
+
+
+    Base.metadata.create_all(engine)
+    DBsession = sessionmaker(bind=engine)
+    session = DBsession()
+
+    new_user = User(id='5',name='Bob')
+    session.add(new_user)
+    session.commit()
+    session.close()
+
+
+if __name__ == '__main__':
+    test_create_insert()
 
 
 
-Base.metadata.create_all(engine)
-DBsession = sessionmaker(bind=engine)
-session = DBsession()
-
-new_user = User(id='5',name='Bob')
-session.add(new_user)
-session.commit()
-session.close()
