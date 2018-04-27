@@ -147,3 +147,14 @@ query_user_byIdAndAge(30,120)
 
 
 delete_user_byIdRange(1000)
+
+
+#rollback
+#infomation of fake_user is in session,
+#but the session has not been commit,
+#so fake_user can be seen in session,but not in mysql
+fake_user = User(id=100,name='fake_user',age=10)
+session=sessionDB()
+session.add(fake_user)
+print session.query(User).all()
+
