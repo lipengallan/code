@@ -15,8 +15,10 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(20))
     age = Column(Integer)
-#    addresses = relationship('Article',order_by=Article.id,back_populates='user')
-
+#    article = relationship("Article", order_by=Article.id, back_populates="user")   # error because of Article.id
+ #   article = relationship("Article",backref='user')   # corrrect
+     article = relationship("Article",back_populates="user")   # correct
+#    article = relationship("Article", order_by=article.id, back_populates="user") # error because of article.id 
     def __str__(self):
         return '%s %s %s' %(self.id, self.name, self.age)
 
@@ -40,9 +42,11 @@ engine = create_engine('mysql+mysqldb://root:lipeng#opzoon@localhost/relation?un
 
 # create table mytest.users and mytest.article
 Base.metadata.create_all(engine)
+
+'''
 sessionDB = sessionmaker(bind=engine)
 
-User.article = relationship("Article", order_by=Article.id, back_populates="user")
+#User.article = relationship("Article", order_by=Article.id, back_populates="user")
 Tom=User(id=9,name="Tom",age=20)
 Tom.article=[Article(name='newbook')]
 
@@ -52,4 +56,4 @@ session=sessionDB()
 session.add(Tom)
 session.commit()
 
-
+'''
