@@ -3,6 +3,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import aliased
+
 
 Base = declarative_base()
 
@@ -29,12 +31,12 @@ Base.metadata.create_all(engine)
 sessionDB = sessionmaker(bind=engine)
 session = sessionDB()
 
-'''
-# create parent and child tables;
 
-parent = Parent(id=1,name='aaaaa')
-child_1  = Child(id=1,name='child_1')
-child_2  = Child(id=2,name='child_2')
+# create parent and child tables;
+'''
+parent = Parent(id=10,name='bbbb')
+child_1  = Child(id=3,name='child_b_1')
+child_2  = Child(id=4,name='child_b_2')
 
 parent.children = [child_1,child_2]
 
@@ -52,6 +54,17 @@ for each in session.query(Parent,Child).filter(Parent.id==1).filter(Child.id==2)
 
 
 
+for each in session.query(Parent).join(Child).filter(Child.id==2).all():
+    print each.id,each.name
 
+
+
+
+sub=session.query(Parent).filter(Parent.id!=10).subquery()
+
+adalias = aliased(Parent,sub)
+
+for each in session.query(Parent,adalias).join(Child):
+    print each
 
  
